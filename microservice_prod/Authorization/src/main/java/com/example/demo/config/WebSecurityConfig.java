@@ -11,7 +11,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Открываем доступ к /auth/register, /auth/login (POST запросы) без аутентификации
+        // доступ к /auth/register, /auth/login (POST запросы) без аутентификации
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/auth/register").permitAll()
                 .requestMatchers("/auth/login").permitAll()
@@ -19,10 +19,10 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
         );
 
-        // Включаем стандартную форму логина (можно выключить, если не нужна)
+        // стандартная форма логина 
         http.formLogin(Customizer.withDefaults());
 
-        // Опционально выключаем CSRF, чтобы проще тестировать POST-запросы (на бою лучше оставить включённым)
+        // отключение csrf для POST запросов на время потом
         http.csrf(csrf -> csrf.disable());
         http.formLogin(Customizer.withDefaults());
 
