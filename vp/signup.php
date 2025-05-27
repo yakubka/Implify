@@ -3,15 +3,41 @@ require "bss.php";
 session_start();
 
 // Обработка регистрации
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+/*<if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $host = 'localhost';
     $dbname = 'volunteering';
     $username = 'root';
     $password = '';
-    
+    $resp = api_request(
+        'POST',
+        'http://localhost:8080/api/auth/login',
+        $data
+      );
+      if (isset($resp['message']) && strpos($resp['message'],'success')!==false) {
+        header('Location: login.php'); exit;
+      } else {
+        $error = $resp['message'] ?? 'Ошибка регистрации';
+      }
     try {
         $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::Eif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user = trim($_POST['username'] ?? '');
+            $pass = $_POST['password'] ?? '';
+        
+            // Формируем тело запроса
+            $data = ['username' => $user, 'password' => $pass];
+        
+            // Посылаем в Java-микросервис
+            $resp = api_request('POST', 'http://localhost:8080/api/auth/signin', $data);
+        
+            if (!empty($resp['token'])) {
+                $_SESSION['token'] = $resp['token'];
+                header('Location: main.php');
+                exit;
+            } else {
+                $error = $resp['message'] ?? 'Bad credentials';
+            }
+        }RRMODE_EXCEPTION);
     } catch (PDOException $e) {
         die("Ошибка подключения к базе данных: " . $e->getMessage());
     }
@@ -73,6 +99,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Ошибка при регистрации';
         }
     }
+}*/
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user = trim($_POST['username'] ?? '');
+    $pass = $_POST['password'] ?? '';
+
+    // формировака тела запроса
+    $data = ['username' => $user, 'password' => $pass];
+
+    // Посылаем в Java-микросервис
+    $resp = api_request('POST', 'http://localhost:8080/api/auth/login', $data);
+
+    if (!empty($resp['token'])) {
+        $_SESSION['token'] = $resp['token'];
+        header('Location: main.php');
+        exit;
+    } else {
+        $error = $resp['message'] ?? 'Bad credentials';
+    }
 }
 
 // Функция проверки сложности пароля
@@ -131,6 +175,8 @@ $countries = [
     'Замбия', 'Зимбабве'
 ];
 ?>
+<!--HTML Форма -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>

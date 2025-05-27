@@ -2,35 +2,15 @@
 require "bss.php";
 session_start();
 
-// Проверяем авторизацию через сессию или куки
-if (!isset($_SESSION['user_id'])) {
-    if (isset($_COOKIE['user_id'])) {
-        $_SESSION['user_id'] = $_COOKIE['user_id'];
-        $_SESSION['username'] = $_COOKIE['username'];
-    } else {
-        header('Location: login.php');
-        exit;
-    }
+// Восстановление токена из куки
+if (empty($_SESSION['token']) && !empty($_COOKIE['token'])) {
+    $_SESSION['token'] = $_COOKIE['token'];
 }
 
-// Подключение к БД
-$host = 'localhost';
-$dbname = 'volunteering';
-$db_username = 'root';
-$db_password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $db_username, $db_password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Ошибка подключения к базе данных: " . $e->getMessage());
+if (empty($_SESSION['token'])) {
+    header('Location: login.php');
+    exit;
 }
-
-// Получаем данные пользователя
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
 // Получаем список стран из оферов
 $countries_stmt = $pdo->query("SELECT DISTINCT country FROM offers ORDER BY country");
 $db_countries = $countries_stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -105,7 +85,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['offer_id'])) {
     }
 }
 
+// Получение профиля через API
+
+$profile = api_request('GET', AUTH_URL . '/profile', null, $_SESSION['token']);
+if (!empty($profile['error']) && $profile['error'] === 'HTTP 401') {
+    session_destroy();
+    setcookie('token', '', time() - 3600, '/');
+    header('Location: login.php');
+    exit;
+}
 // Получаем информацию об откликах пользователя
+
 $user_responses = [];
 if (isset($_SESSION['user_id'])) {
     $responses_stmt = $pdo->prepare("SELECT offer_id, status FROM offer_responses WHERE user_id = ?");

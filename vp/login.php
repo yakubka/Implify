@@ -1,67 +1,45 @@
 <?php
-session_start();
 require "bss.php";
+session_start();
 
-// Устанавливаем время жизни куки на 2 месяца (60 дней)
-$cookieLifetime = time() + 60 * 24 * 60 * 60;
-
-// Если пользователь уже авторизован - перенаправляем на main.php
-if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
+// Если уже залогинен — переходим на main.php
+if (!empty($_SESSION['token'])) {
     header('Location: main.php');
     exit;
 }
 
-// Обработка входа
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Настройки подключения к БД
-    $host = 'localhost';
-    $dbname = 'volunteering';
-    $username = 'root';
-    $password = '';
-    
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        die("Ошибка подключения к базе данных: " . $e->getMessage());
-    }
+$error = '';
 
-    // Получение данных формы
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Сбор данных из формы
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     // Валидация
     $errors = [];
-    
     if (empty($email)) {
         $errors[] = 'Email обязателен';
     }
-    
     if (empty($password)) {
         $errors[] = 'Пароль обязателен';
     }
-    
-    // Проверка пользователя
+
     if (empty($errors)) {
-        $stmt = $pdo->prepare("SELECT id, username, password, email FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($user && password_verify($password, $user['password'])) {
-            // Устанавливаем сессию
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            
-            // Устанавливаем куки на 2 месяца
-            setcookie('username', $user['username'], $cookieLifetime, '/');
-            setcookie('email', $user['email'], $cookieLifetime, '/');
-            setcookie('user_id', $user['id'], $cookieLifetime, '/');
-            
+        // Подготовка и отправка запроса к Java-REST
+        $data = ['email' => $email, 'password' => $password];
+        $resp = api_request('POST', AUTH_URL . '/signin', $data);
+
+        if (!empty($resp['token'])) {
+            // Сохраняем токен
+            $_SESSION['token'] = $resp['token'];
+            setcookie('token', $resp['token'], time() + 60*24*60*60, '/', '', false, true);
             header('Location: main.php');
             exit;
         } else {
-            $errors[] = 'Неверный email или пароль';
+            $error = $resp['message'] ?? 'Неправильный email или пароль';
         }
+    } else {
+        $error = implode('<br>', $errors);
     }
 }
 ?>
