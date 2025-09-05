@@ -158,30 +158,10 @@ graph TB
 4. Access the application
    Open http://localhost:8080 in your browser
 
-## Project Structure
-
-```
-Implify/
-├── src/main/java/com/implify/
-│   ├── controller/       # REST endpoints
-│   ├── model/           # Data models
-│   ├── repository/      # Data access layer
-│   ├── service/         # Business logic
-│   ├── security/        # Authentication & authorization
-│   └── config/          # Application configuration
-├── src/main/resources/
-│   ├── application.yml  # Configuration
-│   └── static/          # Frontend assets
-└── pom.xml             # Maven dependencies
-```
 
 ## Contributing
 
-We welcome contributions to Implify. Please see our Contributing Guidelines for details on how to submit pull requests, report issues, or suggest new features.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+We welcome contributions to Implify. Please see our Contributing Guidelines for details on how to submit pull requests, report issues, or suggest new
 
 ## Support
 
