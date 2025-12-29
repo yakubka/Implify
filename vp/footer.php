@@ -198,7 +198,7 @@
     transform: translateY(-3px);
 }
 
-/* Адаптивность */
+
 @media (max-width: 992px) {
     .footer-container {
         grid-template-columns: 1fr;
@@ -352,4 +352,5 @@
         });
     });
 });
+
 </script>
