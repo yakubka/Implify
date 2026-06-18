@@ -1,0 +1,39 @@
+# Java
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# Node / web
+node_modules/
+dist/
+.vite/
+*.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock.orig
+pkg/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Docker / data
+infra/data/
+pgdata/
