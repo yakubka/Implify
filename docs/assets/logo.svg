@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 280" width="780" height="280" role="img" aria-label="Implify">
+  <!-- orange hexagon dot -->
+  <polygon points="240,54 225,28 195,28 180,54 195,80 225,80" fill="#ee5a24"/>
+  <!-- slanted i stem -->
+  <polygon points="198,92 234,92 218,236 182,236" fill="#16243f"/>
+  <!-- wordmark -->
+  <text x="250" y="212" font-family="Arial, Helvetica, sans-serif" font-weight="800"
+        font-size="150" letter-spacing="-4" fill="#16243f">mplify</text>
+</svg>
